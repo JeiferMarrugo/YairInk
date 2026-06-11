@@ -10,7 +10,7 @@ export default async function AdminArtistsPage() {
   return (
     <>
       <AdminTopBar searchPlaceholder="Buscar artistas..." />
-      <main className="flex-1 overflow-y-auto p-6">
+      <main className="flex-1 overflow-y-auto p-4 sm:p-6">
         <div className="mb-6">
           <h1 className="font-serif text-3xl">Artistas</h1>
           <p className="mt-1 text-sm text-black/50">

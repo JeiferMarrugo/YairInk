@@ -14,9 +14,9 @@ export default async function HomePage() {
       <Header />
       <main>
         <section className="bg-off-white">
-          <div className="mx-auto grid max-w-[1400px] gap-12 px-6 py-16 lg:grid-cols-2 lg:items-center lg:gap-16 lg:px-12 lg:py-24">
+          <div className="mx-auto grid max-w-[1400px] gap-8 px-4 py-12 sm:gap-12 sm:px-6 sm:py-16 lg:grid-cols-2 lg:items-center lg:gap-16 lg:px-12 lg:py-24">
             <div>
-              <h1 className="font-serif text-4xl leading-tight md:text-5xl lg:text-6xl">
+              <h1 className="font-serif text-3xl leading-tight sm:text-4xl md:text-5xl lg:text-6xl">
                 {site.tagline}
               </h1>
               <p className="mt-6 max-w-md text-sm leading-relaxed text-black/70">
@@ -101,7 +101,7 @@ export default async function HomePage() {
                 <PortfolioImage
                   src={images.home.minimal}
                   alt={imageAlts.homeMinimal}
-                  className="aspect-square w-2/3"
+                  className="aspect-square w-full sm:w-2/3"
                 />
                 <div className="mt-auto border-t border-black/10 pt-6">
                   {site.pricing.map((item, i) => (

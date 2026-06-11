@@ -112,7 +112,7 @@ export default function PendingRequestsPanel() {
   }
 
   return (
-    <aside className="w-80 shrink-0 overflow-y-auto border-l border-black/10 bg-white p-5">
+    <aside className="max-h-[42vh] w-full shrink-0 overflow-y-auto border-t border-black/10 bg-white p-4 sm:p-5 xl:max-h-none xl:w-80 xl:border-l xl:border-t-0">
       <div className="mb-8">
         <div className="mb-4 flex items-center justify-between">
           <h2 className="font-serif text-lg">Citas pendientes</h2>

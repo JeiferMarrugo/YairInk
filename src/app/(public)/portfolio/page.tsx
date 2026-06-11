@@ -27,7 +27,7 @@ export default function PortfolioPage() {
     <>
       <Header />
       <main className="bg-white">
-        <section className="mx-auto max-w-[1400px] px-6 pt-16 pb-12 lg:px-12 lg:pt-24 lg:pb-16">
+        <section className="mx-auto max-w-[1400px] px-4 pt-12 pb-10 sm:px-6 sm:pt-16 sm:pb-12 lg:px-12 lg:pt-24 lg:pb-16">
           <h1 className="max-w-4xl font-serif text-4xl leading-[1.05] md:text-5xl lg:text-[3.25rem]">
             {page.title}
           </h1>

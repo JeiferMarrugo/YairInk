@@ -92,9 +92,9 @@ export default function AdminContentClient({
     <>
       <AdminTopBar searchPlaceholder="Buscar en configuración..." />
       <main className="flex flex-1 flex-col overflow-hidden">
-        <div className="flex-1 overflow-y-auto bg-off-white p-6 pb-24">
-          <div className="mb-8">
-            <h1 className="font-serif text-3xl">Configuración</h1>
+        <div className="flex-1 overflow-y-auto bg-off-white p-4 pb-24 sm:p-6">
+          <div className="mb-6 sm:mb-8">
+            <h1 className="font-serif text-2xl sm:text-3xl">Configuración</h1>
             <p className="mt-1 text-sm text-black/50">
               Edita todos los textos de la vista pública del sitio
             </p>

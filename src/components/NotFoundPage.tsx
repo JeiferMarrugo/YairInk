@@ -11,7 +11,7 @@ export default function NotFoundPage() {
   return (
     <div className="flex min-h-screen flex-col bg-off-white text-black">
       <header className="border-b border-black/5 bg-white">
-        <div className="mx-auto flex h-16 max-w-[1400px] items-center justify-between px-6 lg:px-12">
+        <div className="mx-auto flex h-14 max-w-[1400px] items-center justify-between px-4 sm:h-16 sm:px-6 lg:px-12">
           <Link
             href="/"
             className="font-serif text-lg font-semibold tracking-wide lg:text-xl"

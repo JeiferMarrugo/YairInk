@@ -6,7 +6,7 @@ export default function AdminInventoryPage() {
   return (
     <>
       <AdminTopBar searchPlaceholder="Buscar suministros..." />
-      <main className="flex-1 overflow-y-auto p-6">
+      <main className="flex-1 overflow-y-auto p-4 sm:p-6">
         <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
           <div>
             <h1 className="font-serif text-3xl">Inventario de Suministros</h1>

@@ -20,10 +20,10 @@ export default function AdminReviewsClient({
   return (
     <>
       <AdminTopBar searchPlaceholder="Buscar reseñas..." />
-      <main className="flex-1 overflow-y-auto bg-off-white p-6">
-        <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
+      <main className="flex-1 overflow-y-auto bg-off-white p-4 sm:p-6">
+        <div className="mb-6 flex flex-wrap items-end justify-between gap-4 sm:mb-8">
           <div>
-            <h1 className="font-serif text-3xl">Reseñas</h1>
+            <h1 className="font-serif text-2xl sm:text-3xl">Reseñas</h1>
             <p className="mt-1 text-sm text-black/50">
               Gestiona opiniones y solicita feedback por WhatsApp
             </p>
