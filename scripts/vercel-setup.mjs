@@ -75,10 +75,12 @@ console.log(`
    - NO va en Vercel. Déjalo con WHATSAPP_ENABLED=false hasta tener VPS.
    - Luego apunta OPENWA_API_URL a tu servidor Docker.
 
-8) Subidas de fotos (Vercel Blob)
-   - Storage → yairinkuploads → pestaña PROJECTS → Connect to Project → yairink
-   - Debe aparecer BLOB_STORE_ID (o BLOB_READ_WRITE_TOKEN) en Environment Variables
-   - Luego Redeploy. Local sin esas vars: public/uploads/
+8) Subidas de fotos (Vercel Blob) — distinto de la base Neon
+   - En el proyecto yairink → pestaña Storage → botón "Create Database" / "Connect Store"
+   - Elige "Blob" (no Postgres/Neon). Nombre sugerido: yairinkuploads, acceso public
+   - O desde CLI (ya en el repo): npx vercel blob create-store yairinkuploads --access public --yes -e production -e preview
+   - Tras conectar debe aparecer BLOB_READ_WRITE_TOKEN en Settings → Environment Variables
+   - Redeploy. Local sin esas vars: public/uploads/
 
 Secretos generados arriba (JWT_SECRET, CRON_SECRET): guárdalos; no se vuelven a mostrar.
 `);

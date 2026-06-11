@@ -56,3 +56,5 @@ next-env.d.ts
 **_IGNORE_**
 
 .vercel
+
+.env*
