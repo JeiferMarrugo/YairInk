@@ -1,0 +1,106 @@
+.yairink-calendar .fc {
+  --fc-border-color: rgba(0, 0, 0, 0.1);
+  --fc-button-bg-color: #000;
+  --fc-button-border-color: #000;
+  --fc-button-hover-bg-color: rgba(0, 0, 0, 0.8);
+  --fc-button-hover-border-color: rgba(0, 0, 0, 0.8);
+  --fc-button-active-bg-color: #000;
+  --fc-button-active-border-color: #000;
+  --fc-today-bg-color: rgba(0, 0, 0, 0.03);
+  --fc-event-border-color: transparent;
+  font-family: var(--font-sans);
+  font-size: 12px;
+}
+
+.yairink-calendar .fc .fc-toolbar-title {
+  font-family: var(--font-serif);
+  font-size: 1.25rem;
+  font-weight: 500;
+}
+
+.yairink-calendar .fc .fc-button {
+  border-radius: 0;
+  text-transform: uppercase;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  padding: 0.4rem 0.75rem;
+}
+
+.yairink-calendar .fc .fc-col-header-cell-cushion,
+.yairink-calendar .fc .fc-timegrid-slot-label-cushion {
+  font-size: 10px;
+  letter-spacing: 0.05em;
+  color: rgba(0, 0, 0, 0.5);
+}
+
+.yairink-calendar .fc .fc-event {
+  border-radius: 0;
+  font-size: 10px;
+  letter-spacing: 0.03em;
+  padding: 2px 4px;
+}
+
+/* Variación sutil por tipo (borde lateral) — solo si no hay estado propio */
+.yairink-calendar .fc .fc-event.type-sesion:not([class*="status-"]) {
+  box-shadow: inset 3px 0 0 rgba(255, 255, 255, 0.35);
+}
+
+.yairink-calendar .fc .fc-event.type-consulta:not([class*="status-"]) {
+  box-shadow: inset 3px 0 0 rgba(232, 224, 212, 0.8);
+}
+
+.yairink-calendar .fc .fc-event.type-retoque:not([class*="status-"]) {
+  box-shadow: inset 3px 0 0 rgba(0, 0, 0, 0.2);
+}
+
+.yairink-calendar .fc .fc-event.type-pieza_personalizada:not([class*="status-"]) {
+  box-shadow: inset 3px 0 0 #d4c9b8;
+}
+
+.yairink-calendar .fc .fc-event.event-block,
+.event-block {
+  background: repeating-linear-gradient(
+    -45deg,
+    rgba(0, 0, 0, 0.06),
+    rgba(0, 0, 0, 0.06) 4px,
+    rgba(0, 0, 0, 0.12) 4px,
+    rgba(0, 0, 0, 0.12) 8px
+  ) !important;
+  color: rgba(0, 0, 0, 0.55) !important;
+  border: 1px solid rgba(0, 0, 0, 0.2) !important;
+  font-style: italic;
+}
+
+/* Leyenda y estados de cita — después de tipos para ganar especificidad */
+.status-confirmed,
+.yairink-calendar .fc .fc-event.status-confirmed {
+  background-color: #000 !important;
+  color: #fff !important;
+  border: 1px solid #000 !important;
+  box-shadow: inset 4px 0 0 rgba(255, 255, 255, 0.25) !important;
+}
+
+.status-pending,
+.yairink-calendar .fc .fc-event.status-pending {
+  background-color: #fff7ed !important;
+  color: #431407 !important;
+  border: 2px dashed #ea580c !important;
+  box-shadow: inset 4px 0 0 #ea580c !important;
+}
+
+.status-cancelled,
+.yairink-calendar .fc .fc-event.status-cancelled {
+  background-color: #f5f5f5 !important;
+  color: rgba(0, 0, 0, 0.4) !important;
+  border: 1px solid rgba(0, 0, 0, 0.2) !important;
+  box-shadow: inset 4px 0 0 rgba(0, 0, 0, 0.15) !important;
+  text-decoration: line-through;
+}
+
+.status-completed,
+.yairink-calendar .fc .fc-event.status-completed {
+  background-color: #065f46 !important;
+  color: #fff !important;
+  border: 1px solid #047857 !important;
+  box-shadow: inset 4px 0 0 #34d399 !important;
+}

@@ -1,0 +1,115 @@
+@import "tailwindcss";
+
+@theme {
+  --color-cream: #f5f3ee;
+  --color-beige: #e8e0d4;
+  --color-beige-dark: #d4c9b8;
+  --color-off-white: #f7f7f5;
+  --color-muted: #6b6b6b;
+  --font-serif: var(--font-playfair), "Playfair Display", Georgia, serif;
+  --font-sans: var(--font-inter), "Inter", system-ui, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: #ffffff;
+  color: #000000;
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: #000000;
+  color: #ffffff;
+}
+
+@keyframes admin-shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+@keyframes admin-loader-brand {
+  0%,
+  100% {
+    opacity: 0.55;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes admin-loader-stroke {
+  0%,
+  100% {
+    transform: scaleX(0.35);
+    opacity: 0.35;
+  }
+  50% {
+    transform: scaleX(1);
+    opacity: 1;
+  }
+}
+
+@keyframes admin-loader-dot {
+  0%,
+  80%,
+  100% {
+    opacity: 0.2;
+    transform: translateY(0);
+  }
+  40% {
+    opacity: 1;
+    transform: translateY(-2px);
+  }
+}
+
+.admin-shimmer {
+  background: linear-gradient(
+    90deg,
+    rgba(0, 0, 0, 0.06) 25%,
+    rgba(0, 0, 0, 0.12) 50%,
+    rgba(0, 0, 0, 0.06) 75%
+  );
+  background-size: 200% 100%;
+  animation: admin-shimmer 1.6s ease-in-out infinite;
+}
+
+.admin-loader-brand {
+  animation: admin-loader-brand 2.4s ease-in-out infinite;
+}
+
+.admin-loader-stroke {
+  transform-origin: left center;
+  animation: admin-loader-stroke 2s ease-in-out infinite;
+}
+
+.admin-loader-stroke-delay-1 {
+  animation-delay: 0.2s;
+}
+
+.admin-loader-stroke-delay-2 {
+  animation-delay: 0.4s;
+}
+
+.admin-loader-dot {
+  animation: admin-loader-dot 1.4s ease-in-out infinite;
+}
+
+.admin-loader-dot-delay-1 {
+  animation-delay: 0.2s;
+}
+
+.admin-loader-dot-delay-2 {
+  animation-delay: 0.4s;
+}

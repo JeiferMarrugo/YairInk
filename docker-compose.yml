@@ -1,0 +1,99 @@
+# YairInk + OpenWA — stack completo para deploy
+# Uso: docker compose up -d
+#
+# Requiere el repo OpenWA clonado (por defecto ../openWA/OpenWA).
+# La sesión de WhatsApp persiste en OPENWA_DATA_DIR.
+
+name: yairink
+
+services:
+  openwa-api:
+    build:
+      context: ${OPENWA_DIR:-../openWA/OpenWA}
+      dockerfile: Dockerfile
+    image: yairink/openwa-api:local
+    container_name: yairink-openwa-api
+    restart: unless-stopped
+    ports:
+      - "${OPENWA_API_PORT:-2785}:2785"
+    environment:
+      NODE_ENV: ${OPENWA_NODE_ENV:-production}
+      PORT: 2785
+      DATABASE_TYPE: sqlite
+      DATABASE_NAME: /app/data/openwa.sqlite
+      DATABASE_SYNCHRONIZE: "true"
+      ENGINE_TYPE: whatsapp-web.js
+      SESSION_DATA_PATH: /app/data/sessions
+      PUPPETEER_HEADLESS: "true"
+      PUPPETEER_ARGS: --no-sandbox,--disable-setuid-sandbox,--disable-dev-shm-usage,--disable-gpu
+      STORAGE_TYPE: local
+      STORAGE_LOCAL_PATH: /app/data/media
+      WEBHOOK_TIMEOUT: 10000
+      WEBHOOK_MAX_RETRIES: 3
+      QUEUE_ENABLED: "false"
+      API_MASTER_KEY: ${OPENWA_API_KEY}
+      DASHBOARD_URL: http://localhost:${OPENWA_DASHBOARD_PORT:-2886}
+    volumes:
+      - ${OPENWA_DATA_DIR:-../openWA/OpenWA/data}:/app/data
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "require('http').get('http://localhost:2785/api/health', (r) => process.exit(r.statusCode === 200 ? 0 : 1))",
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 45s
+
+  openwa-dashboard:
+    build:
+      context: ${OPENWA_DIR:-../openWA/OpenWA}/dashboard
+      dockerfile: Dockerfile
+    image: yairink/openwa-dashboard:local
+    container_name: yairink-openwa-dashboard
+    restart: unless-stopped
+    ports:
+      - "${OPENWA_DASHBOARD_PORT:-2886}:80"
+    depends_on:
+      openwa-api:
+        condition: service_healthy
+
+  openwa-watcher:
+    image: node:22-alpine
+    container_name: yairink-openwa-watcher
+    restart: unless-stopped
+    depends_on:
+      openwa-api:
+        condition: service_healthy
+    environment:
+      OPENWA_API_URL: http://openwa-api:2785/api
+      OPENWA_API_KEY: ${OPENWA_API_KEY}
+      OPENWA_SESSION_NAME: ${OPENWA_SESSION_NAME:-yairink}
+      OPENWA_SESSION_ID: ${OPENWA_SESSION_ID:-}
+      OPENWA_WATCH_INTERVAL_MS: ${OPENWA_WATCH_INTERVAL_MS:-30000}
+      SESSIONS_DIR: /sessions
+    volumes:
+      - ./docker/openwa-watcher.mjs:/watcher.mjs:ro
+      - ${OPENWA_DATA_DIR:-../openWA/OpenWA/data}/sessions:/sessions:rw
+    command: ["node", "/watcher.mjs"]
+
+  reminders-cron:
+    profiles: ["cron"]
+    image: node:22-alpine
+    container_name: yairink-reminders-cron
+    restart: unless-stopped
+    depends_on:
+      openwa-api:
+        condition: service_healthy
+    environment:
+      APP_URL: ${REMINDER_APP_URL:-http://host.docker.internal:3000}
+      CRON_SECRET: ${CRON_SECRET}
+      REMINDER_CRON_INTERVAL_MS: ${REMINDER_CRON_INTERVAL_MS:-600000}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - ./docker/reminders-cron.mjs:/cron.mjs:ro
+    command: ["node", "/cron.mjs"]

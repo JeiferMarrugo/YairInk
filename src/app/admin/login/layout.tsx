@@ -1,0 +1,9 @@
+export default function LoginLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="min-h-screen overflow-x-hidden bg-white">{children}</div>
+  );
+}
