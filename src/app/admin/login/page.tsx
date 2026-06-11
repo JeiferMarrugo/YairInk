@@ -1,5 +1,6 @@
 import Image from "next/image";
 import LoginForm from "@/components/admin/LoginForm";
+import { getPublicContent } from "@/lib/content";
 
 export const metadata = {
   title: "YAIRINK — Iniciar Sesión",
@@ -22,6 +23,9 @@ type PageProps = {
 
 export default async function AdminLoginPage({ searchParams }: PageProps) {
   const params = await searchParams;
+  const { images } = await getPublicContent();
+  const loginImage =
+    images.login || images.services.hero || "/images/portfolio/artist-at-work.jpg";
   const reasonError = params.reason
     ? REASON_MESSAGES[params.reason]
     : undefined;
@@ -35,7 +39,7 @@ export default async function AdminLoginPage({ searchParams }: PageProps) {
     <div className="grid min-h-screen lg:grid-cols-2">
       <div className="relative hidden h-screen overflow-hidden bg-black lg:block">
         <Image
-          src="/images/portfolio/artist-at-work.jpg"
+          src={loginImage}
           alt="Estudio YAIRINK"
           fill
           priority

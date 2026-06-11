@@ -1,3 +1,4 @@
+import { put } from "@vercel/blob";
 import { mkdir, writeFile } from "fs/promises";
 import path from "path";
 import crypto from "crypto";
@@ -5,7 +6,47 @@ import crypto from "crypto";
 const ALLOWED_TYPES = new Set(["image/jpeg", "image/png", "image/webp"]);
 const MAX_BYTES = 5 * 1024 * 1024;
 
-export type UploadFolder = "artists" | "sessions";
+export type UploadFolder = "artists" | "sessions" | "content";
+
+function useBlobStorage(): boolean {
+  return Boolean(process.env.BLOB_READ_WRITE_TOKEN?.trim());
+}
+
+function buildFileName(file: File): string {
+  const ext =
+    file.type === "image/png"
+      ? "png"
+      : file.type === "image/webp"
+        ? "webp"
+        : "jpg";
+  return `${Date.now()}-${crypto.randomBytes(6).toString("hex")}.${ext}`;
+}
+
+async function saveToLocalDisk(
+  file: File,
+  folder: UploadFolder,
+  name: string
+): Promise<string> {
+  const dir = path.join(process.cwd(), "public", "uploads", folder);
+  await mkdir(dir, { recursive: true });
+  const buffer = Buffer.from(await file.arrayBuffer());
+  await writeFile(path.join(dir, name), buffer);
+  return `/uploads/${folder}/${name}`;
+}
+
+async function saveToVercelBlob(
+  file: File,
+  folder: UploadFolder,
+  name: string
+): Promise<string> {
+  const buffer = Buffer.from(await file.arrayBuffer());
+  const blob = await put(`yairink/${folder}/${name}`, buffer, {
+    access: "public",
+    contentType: file.type,
+    addRandomSuffix: false,
+  });
+  return blob.url;
+}
 
 export async function saveUploadedImage(
   file: File,
@@ -19,18 +60,13 @@ export async function saveUploadedImage(
     throw new Error("La imagen no puede superar 5 MB.");
   }
 
-  const ext =
-    file.type === "image/png"
-      ? "png"
-      : file.type === "image/webp"
-        ? "webp"
-        : "jpg";
-  const name = `${Date.now()}-${crypto.randomBytes(6).toString("hex")}.${ext}`;
-  const dir = path.join(process.cwd(), "public", "uploads", folder);
-  await mkdir(dir, { recursive: true });
-  const buffer = Buffer.from(await file.arrayBuffer());
-  await writeFile(path.join(dir, name), buffer);
-  return `/uploads/${folder}/${name}`;
+  const name = buildFileName(file);
+
+  if (useBlobStorage()) {
+    return saveToVercelBlob(file, folder, name);
+  }
+
+  return saveToLocalDisk(file, folder, name);
 }
 
 export function getAppUrl(): string {
@@ -40,4 +76,8 @@ export function getAppUrl(): string {
     process.env.APP_URL?.trim();
   if (fromEnv) return fromEnv.replace(/\/$/, "");
   return "http://localhost:3000";
+}
+
+export function isBlobStorageEnabled(): boolean {
+  return useBlobStorage();
 }

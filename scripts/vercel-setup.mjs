@@ -75,8 +75,11 @@ console.log(`
    - NO va en Vercel. Déjalo con WHATSAPP_ENABLED=false hasta tener VPS.
    - Luego apunta OPENWA_API_URL a tu servidor Docker.
 
-8) Subidas de fotos
-   - public/uploads no persiste en Vercel. Usa la app; luego migramos a Blob/S3.
+8) Subidas de fotos (Vercel Blob)
+   - Vercel → Storage → Create Database/Store → Blob → Connect to yairink
+   - Eso crea BLOB_READ_WRITE_TOKEN automáticamente
+   - Local sin token: guarda en public/uploads/
+   - Producción con token: URLs https://....blob.vercel-storage.com (persisten)
 
 Secretos generados arriba (JWT_SECRET, CRON_SECRET): guárdalos; no se vuelven a mostrar.
 `);

@@ -65,6 +65,7 @@ export const contentDefaults = {
   images: {
     hero: "/images/portfolio/hero-floral.jpg",
     studio: "/images/studio/workstation.jpg",
+    login: "/images/portfolio/artist-at-work.jpg",
     services: {
       fineline: "/images/portfolio/hero-floral.jpg",
       ornamental: "/images/portfolio/geometric-shoulder.jpg",

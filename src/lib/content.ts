@@ -314,6 +314,15 @@ function buildFooterLinks(
   }));
 }
 
+function normalizeImages(raw: ImagesConfig): ImagesConfig {
+  const fallback =
+    raw.services?.hero ?? "/images/portfolio/artist-at-work.jpg";
+  return {
+    ...raw,
+    login: raw.login ?? fallback,
+  };
+}
+
 async function loadPublicContentUncached(): Promise<PublicContent> {
   const map = await loadContentMap();
 
@@ -324,7 +333,7 @@ async function loadPublicContentUncached(): Promise<PublicContent> {
   }
 
   const site = buildSite(map.get("site") as SiteRow);
-  const images = map.get("images") as ImagesConfig;
+  const images = normalizeImages(map.get("images") as ImagesConfig);
   const imageAlts = buildImageAlts(images, site);
   const portfolioFilters = map.get("portfolio_filters") as string[];
   const pages = map.get("pages") as PagesRow;

@@ -1,10 +1,20 @@
 import { query } from "@/lib/db";
+import type { ImagesConfig } from "@/types/content";
 import type {
   ContentKey,
   EditableContent,
 } from "@/types/content-admin";
 
 type ContentRow = { key: string; value: unknown };
+
+function normalizeImages(raw: ImagesConfig): ImagesConfig {
+  const fallback =
+    raw.services?.hero ?? "/images/portfolio/artist-at-work.jpg";
+  return {
+    ...raw,
+    login: raw.login ?? fallback,
+  };
+}
 
 export async function getEditableContent(): Promise<EditableContent> {
   const rows = await query<ContentRow>(
@@ -20,7 +30,7 @@ export async function getEditableContent(): Promise<EditableContent> {
 
   return {
     site: map.get("site") as EditableContent["site"],
-    images: map.get("images") as EditableContent["images"],
+    images: normalizeImages(map.get("images") as ImagesConfig),
     portfolio_filters: map.get("portfolio_filters") as string[],
     pages: map.get("pages") as EditableContent["pages"],
     components: map.get("components") as EditableContent["components"],

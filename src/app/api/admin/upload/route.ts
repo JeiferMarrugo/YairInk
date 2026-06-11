@@ -18,7 +18,7 @@ export async function POST(request: Request) {
       );
     }
 
-    if (folder !== "artists" && folder !== "sessions") {
+    if (folder !== "artists" && folder !== "sessions" && folder !== "content") {
       return NextResponse.json(
         { error: "Carpeta de destino no válida." },
         { status: 400 }

@@ -9,7 +9,64 @@ import {
   Section,
   TabButton,
 } from "@/components/admin/content/ContentFormFields";
+import ImageUploadField from "@/components/admin/content/ImageUploadField";
 import type { ContentKey, EditableContent } from "@/types/content-admin";
+
+type ImageFieldDef = {
+  path: string;
+  label: string;
+  aspect?: "video" | "square" | "portrait" | "wide";
+  hint?: string;
+};
+
+const IMAGE_SECTIONS: Array<{ title: string; description?: string; fields: ImageFieldDef[] }> = [
+  {
+    title: "Admin",
+    description: "Imagen lateral de la pantalla de inicio de sesión.",
+    fields: [
+      {
+        path: "login",
+        label: "Login — panel admin",
+        aspect: "portrait",
+        hint: "Se muestra en escritorio al iniciar sesión.",
+      },
+    ],
+  },
+  {
+    title: "Inicio",
+    fields: [
+      { path: "hero", label: "Hero principal", aspect: "portrait" },
+      { path: "home.geometric", label: "Portafolio — geométrico", aspect: "portrait" },
+      { path: "home.botanical", label: "Portafolio — botánico", aspect: "portrait" },
+      { path: "home.minimal", label: "Portafolio — minimal", aspect: "square" },
+    ],
+  },
+  {
+    title: "Servicios",
+    fields: [
+      { path: "services.hero", label: "Hero servicios", aspect: "square" },
+      { path: "services.fineline", label: "Fine line", aspect: "portrait" },
+      { path: "services.ornamental", label: "Ornamental", aspect: "portrait" },
+      { path: "services.microRealism", label: "Micro-realismo", aspect: "portrait" },
+    ],
+  },
+  {
+    title: "Estudio y editorial",
+    fields: [
+      { path: "studio", label: "Interior del estudio", aspect: "wide" },
+      { path: "quote", label: "Cita / portafolio", aspect: "wide" },
+    ],
+  },
+];
+
+function getNestedValue(obj: Record<string, unknown>, path: string): string {
+  const keys = path.split(".");
+  let current: unknown = obj;
+  for (const key of keys) {
+    current = (current as Record<string, unknown>)[key];
+  }
+  return typeof current === "string" ? current : "";
+}
 
 type AdminContentClientProps = {
   initialContent: EditableContent;
@@ -786,39 +843,34 @@ export default function AdminContentClient({
           )}
 
           {mainTab === "images" && (
-            <div className="space-y-6">
-              <Section title="Rutas de imágenes">
-                <Field
-                  label="HERO"
-                  value={content.images.hero}
-                  onChange={(v) => updateImages("hero", v)}
-                />
-                <Field
-                  label="ESTUDIO"
-                  value={content.images.studio}
-                  onChange={(v) => updateImages("studio", v)}
-                />
-                <Field
-                  label="CITA / QUOTE"
-                  value={content.images.quote}
-                  onChange={(v) => updateImages("quote", v)}
-                />
-                <Field
-                  label="HOME — GEOMÉTRICO"
-                  value={content.images.home.geometric}
-                  onChange={(v) => updateImages("home.geometric", v)}
-                />
-                <Field
-                  label="HOME — BOTÁNICO"
-                  value={content.images.home.botanical}
-                  onChange={(v) => updateImages("home.botanical", v)}
-                />
-                <Field
-                  label="HOME — MINIMAL"
-                  value={content.images.home.minimal}
-                  onChange={(v) => updateImages("home.minimal", v)}
-                />
-              </Section>
+            <div className="space-y-8">
+              {IMAGE_SECTIONS.map((section) => (
+                <div key={section.title}>
+                  <div className="mb-4">
+                    <h2 className="font-serif text-xl">{section.title}</h2>
+                    {section.description && (
+                      <p className="mt-1 text-sm text-black/50">
+                        {section.description}
+                      </p>
+                    )}
+                  </div>
+                  <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+                    {section.fields.map((field) => (
+                      <ImageUploadField
+                        key={field.path}
+                        label={field.label}
+                        value={getNestedValue(
+                          content.images as unknown as Record<string, unknown>,
+                          field.path
+                        )}
+                        onChange={(v) => updateImages(field.path, v)}
+                        aspect={field.aspect}
+                        hint={field.hint}
+                      />
+                    ))}
+                  </div>
+                </div>
+              ))}
 
               <Section title="Textos alternativos (alt)">
                 {Object.entries(content.images.alts).map(([key, val]) => (

@@ -51,6 +51,8 @@ export type ImageAltsConfig = {
 export type ImagesConfig = {
   hero: string;
   studio: string;
+  /** Panel admin — pantalla de login */
+  login: string;
   services: {
     fineline: string;
     ornamental: string;
