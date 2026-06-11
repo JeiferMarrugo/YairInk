@@ -15,6 +15,7 @@ async function uploadArtistPhoto(file: File): Promise<string> {
   const form = new FormData();
   form.append("file", file);
   form.append("folder", "artists");
+  form.append("preset", "artist");
 
   const response = await fetch("/api/admin/upload", {
     method: "POST",

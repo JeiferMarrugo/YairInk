@@ -1,20 +1,16 @@
 import { query } from "@/lib/db";
+import { contentDefaults } from "@/lib/content-defaults";
+import { mergeWithDefaults } from "@/lib/content-merge";
 import type { ImagesConfig } from "@/types/content";
 import type {
   ContentKey,
+  EditableComponents,
   EditableContent,
+  EditablePages,
+  EditableSite,
 } from "@/types/content-admin";
 
 type ContentRow = { key: string; value: unknown };
-
-function normalizeImages(raw: ImagesConfig): ImagesConfig {
-  const fallback =
-    raw.services?.hero ?? "/images/portfolio/artist-at-work.jpg";
-  return {
-    ...raw,
-    login: raw.login ?? fallback,
-  };
-}
 
 export async function getEditableContent(): Promise<EditableContent> {
   const rows = await query<ContentRow>(
@@ -22,18 +18,27 @@ export async function getEditableContent(): Promise<EditableContent> {
   );
   const map = new Map(rows.map((row) => [row.key, row.value]));
 
-  if (!map.has("site")) {
-    throw new Error(
-      "Contenido del sitio no encontrado. Ejecuta: npm run db:seed-content"
-    );
-  }
-
   return {
-    site: map.get("site") as EditableContent["site"],
-    images: normalizeImages(map.get("images") as ImagesConfig),
-    portfolio_filters: map.get("portfolio_filters") as string[],
-    pages: map.get("pages") as EditableContent["pages"],
-    components: map.get("components") as EditableContent["components"],
+    site: mergeWithDefaults(
+      contentDefaults.site,
+      map.get("site")
+    ) as EditableSite,
+    images: mergeWithDefaults(
+      contentDefaults.images,
+      map.get("images")
+    ) as ImagesConfig,
+    portfolio_filters: mergeWithDefaults(
+      contentDefaults.portfolioFilters,
+      map.get("portfolio_filters")
+    ) as string[],
+    pages: mergeWithDefaults(
+      contentDefaults.pages,
+      map.get("pages")
+    ) as EditablePages,
+    components: mergeWithDefaults(
+      contentDefaults.components,
+      map.get("components")
+    ) as EditableComponents,
   };
 }
 

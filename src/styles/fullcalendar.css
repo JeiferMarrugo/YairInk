@@ -61,23 +61,37 @@
 .event-block {
   background: repeating-linear-gradient(
     -45deg,
-    rgba(0, 0, 0, 0.06),
-    rgba(0, 0, 0, 0.06) 4px,
-    rgba(0, 0, 0, 0.12) 4px,
-    rgba(0, 0, 0, 0.12) 8px
+    rgba(30, 58, 95, 0.06),
+    rgba(30, 58, 95, 0.06) 4px,
+    rgba(30, 58, 95, 0.14) 4px,
+    rgba(30, 58, 95, 0.14) 8px
   ) !important;
-  color: rgba(0, 0, 0, 0.55) !important;
-  border: 1px solid rgba(0, 0, 0, 0.2) !important;
+  color: #1e3a5f !important;
+  border: 1px dashed rgba(59, 130, 246, 0.45) !important;
+  --fc-event-bg-color: #eef4fb;
+  --fc-event-border-color: rgba(59, 130, 246, 0.45);
+  --fc-event-text-color: #1e3a5f;
   font-style: italic;
 }
 
-/* Leyenda y estados de cita — después de tipos para ganar especificidad */
+.yairink-calendar .fc .fc-event.event-block .fc-event-main {
+  color: #1e3a5f !important;
+}
+
+/* Leyenda y estados de cita */
 .status-confirmed,
 .yairink-calendar .fc .fc-event.status-confirmed {
   background-color: #000 !important;
   color: #fff !important;
   border: 1px solid #000 !important;
   box-shadow: inset 4px 0 0 rgba(255, 255, 255, 0.25) !important;
+  --fc-event-bg-color: #000;
+  --fc-event-border-color: #000;
+  --fc-event-text-color: #fff;
+}
+
+.yairink-calendar .fc .fc-event.status-confirmed .fc-event-main {
+  color: #fff !important;
 }
 
 .status-pending,
@@ -86,15 +100,29 @@
   color: #431407 !important;
   border: 2px dashed #ea580c !important;
   box-shadow: inset 4px 0 0 #ea580c !important;
+  --fc-event-bg-color: #fff7ed;
+  --fc-event-border-color: #ea580c;
+  --fc-event-text-color: #431407;
+}
+
+.yairink-calendar .fc .fc-event.status-pending .fc-event-main {
+  color: #431407 !important;
 }
 
 .status-cancelled,
 .yairink-calendar .fc .fc-event.status-cancelled {
-  background-color: #f5f5f5 !important;
-  color: rgba(0, 0, 0, 0.4) !important;
-  border: 1px solid rgba(0, 0, 0, 0.2) !important;
-  box-shadow: inset 4px 0 0 rgba(0, 0, 0, 0.15) !important;
+  background-color: #fef2f2 !important;
+  color: #7f1d1d !important;
+  border: 1px solid #fca5a5 !important;
+  box-shadow: inset 4px 0 0 #dc2626 !important;
   text-decoration: line-through;
+  --fc-event-bg-color: #fef2f2;
+  --fc-event-border-color: #fca5a5;
+  --fc-event-text-color: #7f1d1d;
+}
+
+.yairink-calendar .fc .fc-event.status-cancelled .fc-event-main {
+  color: #7f1d1d !important;
 }
 
 .status-completed,
@@ -103,6 +131,13 @@
   color: #fff !important;
   border: 1px solid #047857 !important;
   box-shadow: inset 4px 0 0 #34d399 !important;
+  --fc-event-bg-color: #065f46;
+  --fc-event-border-color: #047857;
+  --fc-event-text-color: #fff;
+}
+
+.yairink-calendar .fc .fc-event.status-completed .fc-event-main {
+  color: #fff !important;
 }
 
 @media (max-width: 767px) {

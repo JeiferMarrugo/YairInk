@@ -1,8 +1,6 @@
 /**
- * Datos iniciales del sitio público — solo para db:seed-content.
- * El runtime lee siempre desde PostgreSQL (src/lib/content.ts).
+ * Valores por defecto del CMS — solo se usan si no hay dato en BD (ver content-merge.ts).
  */
-
 export const contentDefaults = {
   site: {
     name: "YAIRINK",
@@ -356,4 +354,4 @@ export const contentDefaults = {
     { name: "Ana P.", piece: "Línea Fina — Constelación", rating: 5, review_date: "Junio 2023", text: "La consulta previa marcó la diferencia. Me ayudó a refinar la idea y el resultado final es exactamente lo que imaginaba, pero mejor.", image: "/images/portfolio/mandala-back.jpg", image_alt: "Tatuaje celestial de Ana P.", client_phone: "34655667788", sort_order: 5 },
     { name: "Javier L.", piece: "Micro-realismo", rating: 5, review_date: "Abril 2023", text: "Increíble nivel de detalle en un formato pequeño. Yair es paciente, explica cada paso y el ambiente del estudio transmite mucha confianza.", image: "/images/portfolio/micro-realism-eye.jpg", image_alt: "Tatuaje micro-realismo de Javier L.", client_phone: "34666778899", sort_order: 6 },
   ],
-} as const;
+};

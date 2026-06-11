@@ -22,10 +22,14 @@ type ImageUploadFieldProps = {
   aspect?: Aspect;
 };
 
-async function uploadContentImage(file: File): Promise<string> {
+async function uploadContentImage(
+  file: File,
+  preset: Aspect
+): Promise<string> {
   const form = new FormData();
   form.append("file", file);
   form.append("folder", "content");
+  form.append("preset", preset);
 
   const response = await fetch("/api/admin/upload", {
     method: "POST",
@@ -71,9 +75,9 @@ export default function ImageUploadField({
 
       setUploading(true);
       try {
-        const url = await uploadContentImage(file);
+        const url = await uploadContentImage(file, aspect);
         onChange(url);
-        toast.success("Imagen subida");
+        toast.success("Imagen optimizada y subida");
         setLocalPreview((prev) => {
           if (prev) URL.revokeObjectURL(prev);
           return null;
@@ -90,7 +94,7 @@ export default function ImageUploadField({
         setUploading(false);
       }
     },
-    [onChange]
+    [onChange, aspect]
   );
 
   const { getRootProps, getInputProps, isDragActive, open } = useDropzone({
@@ -100,7 +104,7 @@ export default function ImageUploadField({
       "image/png": [".png"],
       "image/webp": [".webp"],
     },
-    maxSize: 5 * 1024 * 1024,
+    maxSize: 15 * 1024 * 1024,
     multiple: false,
     disabled: uploading,
     noClick: true,
@@ -177,6 +181,9 @@ export default function ImageUploadField({
         </label>
 
         {hint && <p className="text-[10px] text-black/40">{hint}</p>}
+        <p className="text-[10px] text-black/35">
+          Se recorta al ratio del campo, optimiza resolución y guarda en WebP.
+        </p>
       </div>
     </div>
   );

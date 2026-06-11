@@ -1,5 +1,7 @@
 import { cache } from "react";
 import { query } from "@/lib/db";
+import { contentDefaults } from "@/lib/content-defaults";
+import { mergeWithDefaults } from "@/lib/content-merge";
 import type {
   AboutPageContent,
   BookingFormContent,
@@ -180,10 +182,7 @@ function buildSite(raw: SiteRow): SiteConfig {
   return {
     name: raw.name,
     tagline: raw.tagline,
-    seo: raw.seo ?? {
-      title: `${raw.name} — Estudio de Tatuaje Fine Line`,
-      description: raw.tagline,
-    },
+    seo: raw.seo,
     artist: raw.artist,
     contact: raw.contact,
     location: raw.location,
@@ -261,16 +260,7 @@ function buildImageAlts(
     artistName: site.artist.name,
     artistFullName: site.artist.fullName,
   };
-  const alts = raw.alts ?? {
-    hero: "Tatuaje fine line de {{artistName}}",
-    studio: "Interior del estudio {{siteName}}",
-    quote: "Estación de trabajo del estudio {{siteName}}",
-    homeGeometric: "Tatuaje geométrico en hombro",
-    homeBotanical: "Tatuaje botánico en antebrazo",
-    homeMinimal: "Tatuaje minimalista",
-    aboutArtist: "{{artistFullName}} tatuando",
-    servicesHero: "{{artistFullName}} trabajando",
-  };
+  const alts = raw.alts;
 
   return {
     hero: fillTemplate(alts.hero, vars),
@@ -292,7 +282,7 @@ function buildReviewsPage(
     label: raw.label,
     title: fillTemplate(raw.titleTemplate, { artistName: site.artist.name }),
     description: raw.description,
-    starsAriaLabel: raw.starsAriaLabel ?? "{{count}} de 5 estrellas",
+    starsAriaLabel: raw.starsAriaLabel,
     verifiedLabel: raw.verifiedLabel,
     clientPromptLabel: raw.clientPromptLabel,
     clientPromptDescription: raw.clientPromptDescription,
@@ -314,30 +304,29 @@ function buildFooterLinks(
   }));
 }
 
-function normalizeImages(raw: ImagesConfig): ImagesConfig {
-  const fallback =
-    raw.services?.hero ?? "/images/portfolio/artist-at-work.jpg";
-  return {
-    ...raw,
-    login: raw.login ?? fallback,
-  };
-}
-
 async function loadPublicContentUncached(): Promise<PublicContent> {
   const map = await loadContentMap();
 
-  if (!map.has("site")) {
-    throw new Error(
-      "Contenido del sitio no encontrado. Ejecuta: npm run db:seed-content"
-    );
-  }
-
-  const site = buildSite(map.get("site") as SiteRow);
-  const images = normalizeImages(map.get("images") as ImagesConfig);
+  const site = buildSite(
+    mergeWithDefaults(contentDefaults.site, map.get("site")) as SiteRow
+  );
+  const images = mergeWithDefaults(
+    contentDefaults.images,
+    map.get("images")
+  ) as ImagesConfig;
   const imageAlts = buildImageAlts(images, site);
-  const portfolioFilters = map.get("portfolio_filters") as string[];
-  const pages = map.get("pages") as PagesRow;
-  const components = map.get("components") as ComponentsRow;
+  const portfolioFilters = mergeWithDefaults(
+    contentDefaults.portfolioFilters,
+    map.get("portfolio_filters")
+  );
+  const pages = mergeWithDefaults(
+    contentDefaults.pages,
+    map.get("pages")
+  ) as PagesRow;
+  const components = mergeWithDefaults(
+    contentDefaults.components,
+    map.get("components")
+  ) as ComponentsRow;
 
   const [portfolioItems, reviews] = await Promise.all([
     loadPortfolioItems(),

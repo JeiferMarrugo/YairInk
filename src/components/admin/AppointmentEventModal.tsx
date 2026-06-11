@@ -34,6 +34,7 @@ async function uploadSessionPhotos(files: FileList): Promise<string[]> {
     const form = new FormData();
     form.append("file", file);
     form.append("folder", "sessions");
+    form.append("preset", "session");
 
     const response = await fetch("/api/admin/upload", {
       method: "POST",

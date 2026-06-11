@@ -1,5 +1,5 @@
 import pg from "pg";
-import { contentDefaults } from "./content-defaults.ts";
+import { contentDefaults } from "../src/lib/content-defaults.ts";
 
 const databaseUrl = process.env.DATABASE_URL?.trim();
 if (!databaseUrl) {
@@ -10,13 +10,17 @@ if (!databaseUrl) {
 const pool = new pg.Pool({ connectionString: databaseUrl });
 
 async function upsertContent(key: string, value: unknown) {
-  await pool.query(
+  const result = await pool.query(
     `INSERT INTO site_content (key, value)
      VALUES ($1, $2::jsonb)
-     ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value, updated_at = NOW()`,
+     ON CONFLICT (key) DO NOTHING`,
     [key, JSON.stringify(value)]
   );
-  console.log(`  content: ${key}`);
+  if (result.rowCount === 0) {
+    console.log(`  content: ${key} (ya existe, omitido)`);
+  } else {
+    console.log(`  content: ${key}`);
+  }
 }
 
 async function seedPortfolio() {
