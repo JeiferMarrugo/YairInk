@@ -76,10 +76,9 @@ console.log(`
    - Luego apunta OPENWA_API_URL a tu servidor Docker.
 
 8) Subidas de fotos (Vercel Blob)
-   - Vercel → Storage → Create Database/Store → Blob → Connect to yairink
-   - Eso crea BLOB_READ_WRITE_TOKEN automáticamente
-   - Local sin token: guarda en public/uploads/
-   - Producción con token: URLs https://....blob.vercel-storage.com (persisten)
+   - Storage → yairinkuploads → pestaña PROJECTS → Connect to Project → yairink
+   - Debe aparecer BLOB_STORE_ID (o BLOB_READ_WRITE_TOKEN) en Environment Variables
+   - Luego Redeploy. Local sin esas vars: public/uploads/
 
 Secretos generados arriba (JWT_SECRET, CRON_SECRET): guárdalos; no se vuelven a mostrar.
 `);

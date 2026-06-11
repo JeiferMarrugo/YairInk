@@ -9,7 +9,17 @@ const MAX_BYTES = 5 * 1024 * 1024;
 export type UploadFolder = "artists" | "sessions" | "content";
 
 function useBlobStorage(): boolean {
-  return Boolean(process.env.BLOB_READ_WRITE_TOKEN?.trim());
+  return Boolean(
+    process.env.BLOB_READ_WRITE_TOKEN?.trim() ||
+      process.env.BLOB_STORE_ID?.trim()
+  );
+}
+
+function assertStorageConfigured(): void {
+  if (process.env.VERCEL !== "1" || useBlobStorage()) return;
+  throw new Error(
+    "Blob Store no conectado al proyecto. En Vercel: Storage → yairinkuploads → Projects → Connect to Project → yairink."
+  );
 }
 
 function buildFileName(file: File): string {
@@ -61,6 +71,8 @@ export async function saveUploadedImage(
   }
 
   const name = buildFileName(file);
+
+  assertStorageConfigured();
 
   if (useBlobStorage()) {
     return saveToVercelBlob(file, folder, name);
