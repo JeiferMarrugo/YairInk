@@ -16,7 +16,7 @@ const jwtSecret = secret(48);
 const cronSecret = secret(24);
 
 const env = {
-  DATABASE_URL: "postgresql://USER:PASS@HOST/DB?sslmode=require",
+  DATABASE_URL: "postgresql://neondb_owner:npg_aQRT4yEj2emf@ep-delicate-field-aiu2mk5q-pooler.c-4.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require",
   JWT_SECRET: jwtSecret,
   CRON_SECRET: cronSecret,
   NEXT_PUBLIC_APP_URL: "https://tu-proyecto.vercel.app",

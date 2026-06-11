@@ -27,7 +27,8 @@
     "vercel:setup": "node scripts/vercel-setup.mjs",
     "vercel:link": "vercel link",
     "vercel:deploy": "vercel --prod",
-    "vercel:preview": "vercel"
+    "vercel:preview": "vercel",
+    "vercel:db": "node scripts/vercel-env-db.mjs"
   },
   "dependencies": {
     "@fullcalendar/core": "^6.1.20",
