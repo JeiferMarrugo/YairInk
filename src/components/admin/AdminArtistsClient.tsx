@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import Avatar, { avatarUrl } from "@/components/ui/Avatar";
 import PhoneField from "@/components/PhoneField";
 import { validatePhoneFromForm } from "@/lib/phone-client";
+import { parseUploadApiResponse } from "@/lib/upload-client";
 import type { ArtistRecord } from "@/types/artist";
 
 type AdminArtistsClientProps = {
@@ -21,13 +22,8 @@ async function uploadArtistPhoto(file: File): Promise<string> {
     method: "POST",
     body: form,
   });
-  const result = await response.json();
-
-  if (!response.ok) {
-    throw new Error(result.error ?? "No se pudo subir la foto.");
-  }
-
-  return result.url as string;
+  const { url } = await parseUploadApiResponse(response);
+  return url;
 }
 
 export default function AdminArtistsClient({

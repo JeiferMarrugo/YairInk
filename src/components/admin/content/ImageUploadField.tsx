@@ -4,6 +4,11 @@ import Image from "next/image";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { toast } from "sonner";
+import {
+  parseUploadApiResponse,
+  UPLOAD_MAX_BYTES,
+  UPLOAD_MAX_MB_LABEL,
+} from "@/lib/upload-client";
 
 type Aspect = "video" | "square" | "portrait" | "wide";
 
@@ -35,13 +40,8 @@ async function uploadContentImage(
     method: "POST",
     body: form,
   });
-  const result = (await response.json()) as { url?: string; error?: string };
-
-  if (!response.ok) {
-    throw new Error(result.error ?? "No se pudo subir la imagen.");
-  }
-
-  return result.url!;
+  const { url } = await parseUploadApiResponse(response);
+  return url;
 }
 
 export default function ImageUploadField({
@@ -104,7 +104,7 @@ export default function ImageUploadField({
       "image/png": [".png"],
       "image/webp": [".webp"],
     },
-    maxSize: 15 * 1024 * 1024,
+    maxSize: UPLOAD_MAX_BYTES,
     multiple: false,
     disabled: uploading,
     noClick: true,
@@ -182,7 +182,8 @@ export default function ImageUploadField({
 
         {hint && <p className="text-[10px] text-black/40">{hint}</p>}
         <p className="text-[10px] text-black/35">
-          Se recorta al ratio del campo, optimiza resolución y guarda en WebP.
+          Se recorta al ratio del campo, optimiza resolución y guarda en WebP (máx.{" "}
+          {UPLOAD_MAX_MB_LABEL}).
         </p>
       </div>
     </div>

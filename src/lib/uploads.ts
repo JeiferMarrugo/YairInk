@@ -9,8 +9,8 @@ import {
 } from "@/lib/image-presets";
 
 const ALLOWED_TYPES = new Set(["image/jpeg", "image/png", "image/webp"]);
-/** Límite de entrada antes de optimizar (la salida WebP será mucho menor). */
-const MAX_INPUT_BYTES = 15 * 1024 * 1024;
+/** Límite de entrada (Vercel Hobby ~4.5 MB por request). */
+const MAX_INPUT_BYTES = 4 * 1024 * 1024;
 
 export type UploadFolder = "artists" | "sessions" | "content";
 
@@ -69,7 +69,7 @@ export async function saveUploadedImage(
   }
 
   if (file.size > MAX_INPUT_BYTES) {
-    throw new Error("La imagen no puede superar 15 MB.");
+    throw new Error("La imagen no puede superar 4 MB.");
   }
 
   const resolvedPreset = resolveImagePreset(preset, folder);

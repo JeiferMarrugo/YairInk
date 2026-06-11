@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import FullCalendar from "@fullcalendar/react";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import dayGridPlugin from "@fullcalendar/daygrid";
@@ -112,6 +112,13 @@ export default function AdminCalendar() {
     const { start, end } = rangeRef.current;
     if (start && end) void loadEvents(start, end);
   }
+
+  useEffect(() => {
+    const handler = () => refreshCalendar();
+    window.addEventListener("yairink:appointments-changed", handler);
+    return () =>
+      window.removeEventListener("yairink:appointments-changed", handler);
+  }, [loadEvents]);
 
   function handleDatesSet(info: DatesSetArg) {
     void loadEvents(info.startStr, info.endStr);

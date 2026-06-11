@@ -4,6 +4,12 @@ import path from "path";
 const nextConfig: NextConfig = {
   outputFileTracingRoot: path.join(__dirname),
   serverExternalPackages: ["sharp"],
+  experimental: {
+    middlewareClientMaxBodySize: "4.5mb",
+    serverActions: {
+      bodySizeLimit: "4.5mb",
+    },
+  },
   images: {
     remotePatterns: [
       {

@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react";
 import { toast } from "sonner";
+import { parseUploadApiResponse } from "@/lib/upload-client";
 import type { AppointmentRecord, AppointmentStatus } from "@/types/scheduling";
 import {
   appointmentStatusLabels,
@@ -40,13 +41,8 @@ async function uploadSessionPhotos(files: FileList): Promise<string[]> {
       method: "POST",
       body: form,
     });
-    const result = await response.json();
-
-    if (!response.ok) {
-      throw new Error(result.error ?? "No se pudo subir una imagen.");
-    }
-
-    urls.push(result.url as string);
+    const { url } = await parseUploadApiResponse(response);
+    urls.push(url);
   }
 
   return urls;

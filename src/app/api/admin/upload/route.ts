@@ -3,6 +3,9 @@ import { requireAuth } from "@/lib/auth";
 import { isImagePreset } from "@/lib/image-presets";
 import { saveUploadedImage, type UploadFolder } from "@/lib/uploads";
 
+export const runtime = "nodejs";
+export const maxDuration = 30;
+
 export async function POST(request: Request) {
   const auth = await requireAuth(request);
   if ("error" in auth) return auth.error;

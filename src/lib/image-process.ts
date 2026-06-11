@@ -12,20 +12,34 @@ export type ProcessedImage = {
   height: number;
 };
 
+async function resizeCover(
+  input: Buffer,
+  width: number,
+  height: number,
+  position: "attention" | "centre"
+): Promise<Buffer> {
+  return sharp(input)
+    .rotate()
+    .resize(width, height, {
+      fit: "cover",
+      position,
+    })
+    .webp({ quality: 82, effort: 4 })
+    .toBuffer();
+}
+
 export async function processImageForPreset(
   input: Buffer,
   preset: ImagePreset
 ): Promise<ProcessedImage> {
   const { width, height } = IMAGE_PRESETS[preset];
 
-  const buffer = await sharp(input)
-    .rotate()
-    .resize(width, height, {
-      fit: "cover",
-      position: "attention",
-    })
-    .webp({ quality: 82, effort: 4 })
-    .toBuffer();
+  let buffer: Buffer;
+  try {
+    buffer = await resizeCover(input, width, height, "attention");
+  } catch {
+    buffer = await resizeCover(input, width, height, "centre");
+  }
 
   return {
     buffer,
