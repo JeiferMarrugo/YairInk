@@ -265,22 +265,18 @@ export async function getRevenueTrends(): Promise<RevenueTrendPoint[]> {
   }));
 }
 
-export async function listAdminPortfolioItems(): Promise<AdminPortfolioItem[]> {
-  const rows = await query<{
-    id: string;
-    title: string;
-    meta: string;
-    src: string;
-    alt: string;
-    created_at: string;
-    is_published: boolean;
-  }>(
-    `SELECT id, title, meta, src, alt, created_at, is_published
-     FROM portfolio_items
-     ORDER BY sort_order ASC, created_at DESC`
-  );
+type PortfolioItemRow = {
+  id: string;
+  title: string;
+  meta: string;
+  src: string;
+  alt: string;
+  created_at: string;
+  is_published: boolean;
+};
 
-  return rows.map((row) => ({
+function mapAdminPortfolioItem(row: PortfolioItemRow): AdminPortfolioItem {
+  return {
     id: row.id,
     title: row.title,
     meta: row.meta,
@@ -295,7 +291,32 @@ export async function listAdminPortfolioItems(): Promise<AdminPortfolioItem[]> {
       })
       .toUpperCase(),
     isPublished: row.is_published,
-  }));
+  };
+}
+
+export async function listAdminPortfolioItems(): Promise<AdminPortfolioItem[]> {
+  const rows = await query<PortfolioItemRow>(
+    `SELECT id, title, meta, src, alt, created_at, is_published
+     FROM portfolio_items
+     ORDER BY sort_order ASC, created_at DESC`
+  );
+
+  return rows.map(mapAdminPortfolioItem);
+}
+
+export async function updatePortfolioItemPublished(
+  id: string,
+  isPublished: boolean
+): Promise<AdminPortfolioItem | null> {
+  const row = await queryOne<PortfolioItemRow>(
+    `UPDATE portfolio_items
+     SET is_published = $2
+     WHERE id = $1
+     RETURNING id, title, meta, src, alt, created_at, is_published`,
+    [id, isPublished]
+  );
+
+  return row ? mapAdminPortfolioItem(row) : null;
 }
 
 export function getDashboardDateLabel(): string {
