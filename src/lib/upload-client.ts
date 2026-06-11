@@ -1,3 +1,6 @@
+import { processImageFileForPreset } from "@/lib/image-process-client";
+import type { ImagePreset } from "@/lib/image-presets";
+
 type ApiErrorBody = { error?: string };
 
 export async function parseUploadApiResponse(
@@ -34,3 +37,38 @@ export async function parseUploadApiResponse(
 export const UPLOAD_MAX_BYTES = 4 * 1024 * 1024;
 
 export const UPLOAD_MAX_MB_LABEL = "4 MB";
+
+export async function prepareUploadFile(
+  file: File,
+  preset: ImagePreset
+): Promise<File> {
+  try {
+    return await processImageFileForPreset(file, preset);
+  } catch (error) {
+    throw new Error(
+      error instanceof Error
+        ? error.message
+        : "No se pudo optimizar la imagen."
+    );
+  }
+}
+
+export async function uploadAdminImage(
+  file: File,
+  folder: "artists" | "sessions" | "content",
+  preset: ImagePreset
+): Promise<string> {
+  const prepared = await prepareUploadFile(file, preset);
+  const form = new FormData();
+  form.append("file", prepared);
+  form.append("folder", folder);
+  form.append("preset", preset);
+
+  const response = await fetch("/api/admin/upload", {
+    method: "POST",
+    body: form,
+  });
+
+  const { url } = await parseUploadApiResponse(response);
+  return url;
+}

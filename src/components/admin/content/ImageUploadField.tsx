@@ -5,10 +5,11 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { toast } from "sonner";
 import {
-  parseUploadApiResponse,
+  uploadAdminImage,
   UPLOAD_MAX_BYTES,
   UPLOAD_MAX_MB_LABEL,
 } from "@/lib/upload-client";
+import type { ImagePreset } from "@/lib/image-presets";
 
 type Aspect = "video" | "square" | "portrait" | "wide";
 
@@ -31,17 +32,7 @@ async function uploadContentImage(
   file: File,
   preset: Aspect
 ): Promise<string> {
-  const form = new FormData();
-  form.append("file", file);
-  form.append("folder", "content");
-  form.append("preset", preset);
-
-  const response = await fetch("/api/admin/upload", {
-    method: "POST",
-    body: form,
-  });
-  const { url } = await parseUploadApiResponse(response);
-  return url;
+  return uploadAdminImage(file, "content", preset as ImagePreset);
 }
 
 export default function ImageUploadField({

@@ -3,12 +3,6 @@ import path from "path";
 
 const nextConfig: NextConfig = {
   outputFileTracingRoot: path.join(__dirname),
-  outputFileTracingIncludes: {
-    "/api/admin/upload": [
-      "./node_modules/@img/**/*",
-      "./node_modules/sharp/**/*",
-    ],
-  },
   experimental: {
     middlewareClientMaxBodySize: "4.5mb",
     serverActions: {

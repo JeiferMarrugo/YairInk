@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import Avatar, { avatarUrl } from "@/components/ui/Avatar";
 import PhoneField from "@/components/PhoneField";
 import { validatePhoneFromForm } from "@/lib/phone-client";
-import { parseUploadApiResponse } from "@/lib/upload-client";
+import { uploadAdminImage } from "@/lib/upload-client";
 import type { ArtistRecord } from "@/types/artist";
 
 type AdminArtistsClientProps = {
@@ -13,17 +13,7 @@ type AdminArtistsClientProps = {
 };
 
 async function uploadArtistPhoto(file: File): Promise<string> {
-  const form = new FormData();
-  form.append("file", file);
-  form.append("folder", "artists");
-  form.append("preset", "artist");
-
-  const response = await fetch("/api/admin/upload", {
-    method: "POST",
-    body: form,
-  });
-  const { url } = await parseUploadApiResponse(response);
-  return url;
+  return uploadAdminImage(file, "artists", "artist");
 }
 
 export default function AdminArtistsClient({

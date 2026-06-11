@@ -2,11 +2,6 @@ import { put } from "@vercel/blob";
 import { mkdir, writeFile } from "fs/promises";
 import path from "path";
 import crypto from "crypto";
-import { processImageForPreset } from "@/lib/image-process";
-import {
-  resolveImagePreset,
-  type ImagePreset,
-} from "@/lib/image-presets";
 
 const ALLOWED_TYPES = new Set(["image/jpeg", "image/png", "image/webp"]);
 /** Límite de entrada (Vercel Hobby ~4.5 MB por request). */
@@ -24,6 +19,12 @@ function useBlobStorage(): boolean {
       process.env.BLOB_STORE_ID?.trim() ||
       isVercelRuntime()
   );
+}
+
+function extensionFromType(type: string): string {
+  if (type === "image/webp") return "webp";
+  if (type === "image/png") return "png";
+  return "jpg";
 }
 
 function buildFileName(extension: string): string {
@@ -59,10 +60,10 @@ async function saveBufferToVercelBlob(
   return blob.url;
 }
 
+/** Guarda la imagen ya optimizada en el cliente (WebP recortado). */
 export async function saveUploadedImage(
   file: File,
-  folder: UploadFolder,
-  preset?: ImagePreset
+  folder: UploadFolder
 ): Promise<string> {
   if (!ALLOWED_TYPES.has(file.type)) {
     throw new Error("Solo se permiten imágenes JPG, PNG o WebP.");
@@ -72,27 +73,16 @@ export async function saveUploadedImage(
     throw new Error("La imagen no puede superar 4 MB.");
   }
 
-  const resolvedPreset = resolveImagePreset(preset, folder);
-  const input = Buffer.from(await file.arrayBuffer());
-
-  let processed;
-  try {
-    processed = await processImageForPreset(input, resolvedPreset);
-  } catch {
-    throw new Error(
-      "No se pudo procesar la imagen. Prueba con otro archivo JPG, PNG o WebP."
-    );
-  }
-
-  const name = buildFileName(processed.extension);
+  const buffer = Buffer.from(await file.arrayBuffer());
+  const name = buildFileName(extensionFromType(file.type));
 
   if (useBlobStorage()) {
     try {
       return await saveBufferToVercelBlob(
-        processed.buffer,
+        buffer,
         folder,
         name,
-        processed.contentType
+        file.type
       );
     } catch (error) {
       const detail =
@@ -103,7 +93,7 @@ export async function saveUploadedImage(
     }
   }
 
-  return saveBufferToLocalDisk(processed.buffer, folder, name);
+  return saveBufferToLocalDisk(buffer, folder, name);
 }
 
 export function getAppUrl(): string {

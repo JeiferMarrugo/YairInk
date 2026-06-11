@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
 import { requireAuth } from "@/lib/auth";
-import { isImagePreset } from "@/lib/image-presets";
 import { saveUploadedImage, type UploadFolder } from "@/lib/uploads";
 
 export const runtime = "nodejs";
@@ -14,7 +13,6 @@ export async function POST(request: Request) {
     const form = await request.formData();
     const file = form.get("file");
     const folder = String(form.get("folder") ?? "");
-    const presetRaw = String(form.get("preset") ?? "");
 
     if (!(file instanceof File) || file.size === 0) {
       return NextResponse.json(
@@ -30,18 +28,7 @@ export async function POST(request: Request) {
       );
     }
 
-    if (presetRaw && !isImagePreset(presetRaw)) {
-      return NextResponse.json(
-        { error: "Formato de imagen (preset) no válido." },
-        { status: 400 }
-      );
-    }
-
-    const url = await saveUploadedImage(
-      file,
-      folder as UploadFolder,
-      presetRaw && isImagePreset(presetRaw) ? presetRaw : undefined
-    );
+    const url = await saveUploadedImage(file, folder as UploadFolder);
     return NextResponse.json({ url });
   } catch (error) {
     const message =

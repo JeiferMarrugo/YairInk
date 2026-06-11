@@ -2,7 +2,7 @@
 
 import { useRef, useState } from "react";
 import { toast } from "sonner";
-import { parseUploadApiResponse } from "@/lib/upload-client";
+import { uploadAdminImage } from "@/lib/upload-client";
 import type { AppointmentRecord, AppointmentStatus } from "@/types/scheduling";
 import {
   appointmentStatusLabels,
@@ -32,16 +32,7 @@ async function uploadSessionPhotos(files: FileList): Promise<string[]> {
   const urls: string[] = [];
 
   for (const file of Array.from(files)) {
-    const form = new FormData();
-    form.append("file", file);
-    form.append("folder", "sessions");
-    form.append("preset", "session");
-
-    const response = await fetch("/api/admin/upload", {
-      method: "POST",
-      body: form,
-    });
-    const { url } = await parseUploadApiResponse(response);
+    const url = await uploadAdminImage(file, "sessions", "session");
     urls.push(url);
   }
 
