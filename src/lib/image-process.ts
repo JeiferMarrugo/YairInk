@@ -1,4 +1,3 @@
-import sharp from "sharp";
 import {
   IMAGE_PRESETS,
   type ImagePreset,
@@ -12,12 +11,18 @@ export type ProcessedImage = {
   height: number;
 };
 
+async function loadSharp() {
+  const mod = await import("sharp");
+  return mod.default;
+}
+
 async function resizeCover(
   input: Buffer,
   width: number,
   height: number,
   position: "attention" | "centre"
 ): Promise<Buffer> {
+  const sharp = await loadSharp();
   return sharp(input)
     .rotate()
     .resize(width, height, {
