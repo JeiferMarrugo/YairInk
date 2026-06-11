@@ -1,0 +1,8 @@
+# Reduce CLI upload size
+.git
+.next
+node_modules
+services
+docker
+data
+public/uploads

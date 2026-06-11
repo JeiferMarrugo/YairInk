@@ -23,7 +23,11 @@
     "auth:test-jwt": "tsx --env-file=.env.local db/test-jwt.mts",
     "reminders:run": "tsx --env-file=.env.local scripts/run-reminders.mts",
     "cron:reminders": "tsx --env-file=.env.local scripts/cron-reminders.mts",
-    "autopush": "node scripts/autopush.mjs"
+    "autopush": "node scripts/autopush.mjs",
+    "vercel:setup": "node scripts/vercel-setup.mjs",
+    "vercel:link": "vercel link",
+    "vercel:deploy": "vercel --prod",
+    "vercel:preview": "vercel"
   },
   "dependencies": {
     "@fullcalendar/core": "^6.1.20",
@@ -55,6 +59,7 @@
     "@types/react-dom": "^19.1.5",
     "tailwindcss": "^4.1.8",
     "tsx": "^4.20.3",
-    "typescript": "^5.8.3"
+    "typescript": "^5.8.3",
+    "vercel": "^54.11.1"
   }
 }

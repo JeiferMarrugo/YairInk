@@ -53,3 +53,5 @@ next-env.d.ts
 **.data.json
 **.node-persist**
 **_IGNORE_**
+
+.vercel
