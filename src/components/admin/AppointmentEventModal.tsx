@@ -32,7 +32,7 @@ async function uploadSessionPhotos(files: FileList): Promise<string[]> {
   const urls: string[] = [];
 
   for (const file of Array.from(files)) {
-    const url = await uploadAdminImage(file, "sessions", "session");
+    const { url } = await uploadAdminImage(file, "sessions", "session");
     urls.push(url);
   }
 

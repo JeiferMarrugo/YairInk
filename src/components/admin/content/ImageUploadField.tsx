@@ -4,30 +4,24 @@ import Image from "next/image";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { toast } from "sonner";
-import type { ImagePreset } from "@/lib/image-presets";
+import {
+  formatPresetOutput,
+  getPresetAspectRatio,
+  IMAGE_PRESETS,
+  type ImagePreset,
+} from "@/lib/image-presets";
 import {
   uploadAdminImage,
   UPLOAD_MAX_BYTES,
   UPLOAD_MAX_MB_LABEL,
 } from "@/lib/upload-client";
 
-type Aspect = "video" | "square" | "portrait" | "wide" | "login";
-
-const aspectClass: Record<Aspect, string> = {
-  video: "aspect-video",
-  square: "aspect-square",
-  portrait: "aspect-[3/4]",
-  wide: "aspect-[21/9]",
-  login: "aspect-[8/9]",
-};
-
 type ImageUploadFieldProps = {
   label: string;
   value: string;
   onChange: (value: string) => void;
   hint?: string;
-  aspect?: Aspect;
-  preset?: ImagePreset;
+  preset: ImagePreset;
 };
 
 export default function ImageUploadField({
@@ -35,13 +29,14 @@ export default function ImageUploadField({
   value,
   onChange,
   hint,
-  aspect = "video",
   preset,
 }: ImageUploadFieldProps) {
   const [uploading, setUploading] = useState(false);
   const [localPreview, setLocalPreview] = useState<string | null>(null);
 
-  const uploadPreset = preset ?? (aspect as ImagePreset);
+  const uploadPreset = preset;
+  const presetConfig = IMAGE_PRESETS[uploadPreset];
+  const outputHint = formatPresetOutput(uploadPreset);
 
   const previewSrc = localPreview || value;
 
@@ -64,9 +59,13 @@ export default function ImageUploadField({
 
       setUploading(true);
       try {
-        const url = await uploadAdminImage(file, "content", uploadPreset);
+        const { url, width, height } = await uploadAdminImage(
+          file,
+          "content",
+          uploadPreset
+        );
         onChange(url);
-        toast.success("Imagen optimizada y subida");
+        toast.success(`Imagen lista: ${width}×${height} px (WebP)`);
         setLocalPreview((prev) => {
           if (prev) URL.revokeObjectURL(prev);
           return null;
@@ -110,13 +109,17 @@ export default function ImageUploadField({
     <div className="flex flex-col border border-black/10 bg-white">
       <div className="border-b border-black/10 px-4 py-3">
         <p className="text-[10px] tracking-[0.12em] text-black/50">{label}</p>
+        <p className="mt-1 text-[9px] tracking-[0.06em] text-black/35">
+          {outputHint}
+        </p>
       </div>
 
       <div
         {...getRootProps()}
-        className={`group relative overflow-hidden bg-off-white ${aspectClass[aspect]} ${
+        className={`group relative overflow-hidden bg-off-white ${
           isDragActive ? "ring-2 ring-inset ring-black/20" : ""
         }`}
+        style={{ aspectRatio: getPresetAspectRatio(uploadPreset) }}
       >
         <input {...getInputProps()} />
 
@@ -125,19 +128,21 @@ export default function ImageUploadField({
             src={previewSrc}
             alt={label}
             fill
-            unoptimized={previewSrc.startsWith("blob:") || previewSrc.startsWith("http")}
+            unoptimized={
+              previewSrc.startsWith("blob:") || previewSrc.startsWith("http")
+            }
             className="object-cover object-center grayscale transition duration-300 group-hover:grayscale-0"
             sizes="(max-width: 768px) 100vw, 400px"
           />
         ) : (
           <div className="flex h-full min-h-[140px] items-center justify-center p-6 text-center text-xs text-black/35">
-            Sin imagen — sube un archivo JPG, PNG o WebP
+            Sin imagen — sube JPG, PNG o WebP en alta resolución
           </div>
         )}
 
         {uploading && (
           <div className="absolute inset-0 flex items-center justify-center bg-white/70 text-[10px] tracking-[0.15em]">
-            SUBIENDO…
+            OPTIMIZANDO…
           </div>
         )}
 
@@ -153,7 +158,7 @@ export default function ImageUploadField({
           disabled={uploading}
           className="w-full border border-black/15 bg-off-white py-2.5 text-[10px] tracking-[0.12em] transition-colors hover:border-black/30 hover:bg-white disabled:opacity-50"
         >
-          {uploading ? "SUBIENDO…" : "ELEGIR ARCHIVO"}
+          {uploading ? "OPTIMIZANDO…" : "ELEGIR ARCHIVO"}
         </button>
 
         <label className="block">
@@ -171,8 +176,9 @@ export default function ImageUploadField({
 
         {hint && <p className="text-[10px] text-black/40">{hint}</p>}
         <p className="text-[10px] text-black/35">
-          Se recorta al ratio del campo, optimiza resolución y guarda en WebP (máx.{" "}
-          {UPLOAD_MAX_MB_LABEL}).
+          Al subir, se recorta al ratio del sitio, se ajusta hasta{" "}
+          {presetConfig.width}×{presetConfig.height} px sin ampliar la original, y
+          se guarda en WebP (máx. {UPLOAD_MAX_MB_LABEL}).
         </p>
       </div>
     </div>

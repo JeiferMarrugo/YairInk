@@ -13,7 +13,8 @@ type AdminArtistsClientProps = {
 };
 
 async function uploadArtistPhoto(file: File): Promise<string> {
-  return uploadAdminImage(file, "artists", "artist");
+  const { url } = await uploadAdminImage(file, "artists", "artist");
+  return url;
 }
 
 export default function AdminArtistsClient({

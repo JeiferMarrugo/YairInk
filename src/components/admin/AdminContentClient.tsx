@@ -10,13 +10,13 @@ import {
   TabButton,
 } from "@/components/admin/content/ContentFormFields";
 import ImageUploadField from "@/components/admin/content/ImageUploadField";
+import type { ImagePreset } from "@/lib/image-presets";
 import type { ContentKey, EditableContent } from "@/types/content-admin";
 
 type ImageFieldDef = {
   path: string;
   label: string;
-  aspect?: "video" | "square" | "portrait" | "wide" | "login";
-  preset?: import("@/lib/image-presets").ImagePreset;
+  preset: ImagePreset;
   hint?: string;
 };
 
@@ -28,7 +28,6 @@ const IMAGE_SECTIONS: Array<{ title: string; description?: string; fields: Image
       {
         path: "login",
         label: "Login — panel admin",
-        aspect: "login",
         preset: "login",
         hint: "Pantalla completa lateral (escritorio). Sube en alta resolución.",
       },
@@ -37,26 +36,54 @@ const IMAGE_SECTIONS: Array<{ title: string; description?: string; fields: Image
   {
     title: "Inicio",
     fields: [
-      { path: "hero", label: "Hero principal", aspect: "portrait" },
-      { path: "home.geometric", label: "Portafolio — geométrico", aspect: "portrait" },
-      { path: "home.botanical", label: "Portafolio — botánico", aspect: "portrait" },
-      { path: "home.minimal", label: "Portafolio — minimal", aspect: "square" },
+      { path: "hero", label: "Hero principal", preset: "portrait" },
+      {
+        path: "home.geometric",
+        label: "Portafolio — geométrico",
+        preset: "portrait",
+      },
+      {
+        path: "home.botanical",
+        label: "Portafolio — botánico",
+        preset: "portrait",
+      },
+      {
+        path: "home.minimal",
+        label: "Portafolio — minimal",
+        preset: "square",
+      },
     ],
   },
   {
     title: "Servicios",
     fields: [
-      { path: "services.hero", label: "Hero servicios", aspect: "square" },
-      { path: "services.fineline", label: "Fine line", aspect: "portrait" },
-      { path: "services.ornamental", label: "Ornamental", aspect: "portrait" },
-      { path: "services.microRealism", label: "Micro-realismo", aspect: "portrait" },
+      {
+        path: "services.hero",
+        label: "Hero servicios",
+        preset: "square",
+      },
+      {
+        path: "services.fineline",
+        label: "Fine line",
+        preset: "portrait",
+      },
+      {
+        path: "services.ornamental",
+        label: "Ornamental",
+        preset: "portrait",
+      },
+      {
+        path: "services.microRealism",
+        label: "Micro-realismo",
+        preset: "portrait",
+      },
     ],
   },
   {
     title: "Estudio y editorial",
     fields: [
-      { path: "studio", label: "Interior del estudio", aspect: "wide" },
-      { path: "quote", label: "Cita / portafolio", aspect: "wide" },
+      { path: "studio", label: "Interior del estudio", preset: "wide" },
+      { path: "quote", label: "Cita / portafolio", preset: "wide" },
     ],
   },
 ];
@@ -866,7 +893,6 @@ export default function AdminContentClient({
                           field.path
                         )}
                         onChange={(v) => updateImages(field.path, v)}
-                        aspect={field.aspect}
                         preset={field.preset}
                         hint={field.hint}
                       />

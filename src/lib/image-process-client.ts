@@ -1,5 +1,11 @@
 import { IMAGE_PRESETS, type ImagePreset } from "@/lib/image-presets";
 
+export type ProcessedImage = {
+  file: File;
+  width: number;
+  height: number;
+};
+
 function loadImage(file: File): Promise<HTMLImageElement> {
   return new Promise((resolve, reject) => {
     const url = URL.createObjectURL(file);
@@ -32,17 +38,44 @@ function canvasToWebpBlob(
   });
 }
 
-/** Recorta, redimensiona y exporta WebP en el navegador (sin Sharp en el servidor). */
+/**
+ * Recorta al ratio del preset, redimensiona al máximo del preset sin ampliar
+ * (evita borrosidad) y exporta WebP en el navegador.
+ */
 export async function processImageFileForPreset(
   file: File,
   preset: ImagePreset
-): Promise<File> {
-  const { width, height, quality } = IMAGE_PRESETS[preset];
+): Promise<ProcessedImage> {
+  const { width: maxW, height: maxH, quality } = IMAGE_PRESETS[preset];
+  const targetAspect = maxW / maxH;
   const img = await loadImage(file);
 
+  let srcX: number;
+  let srcY: number;
+  let srcW: number;
+  let srcH: number;
+
+  const imgAspect = img.naturalWidth / img.naturalHeight;
+
+  if (imgAspect > targetAspect) {
+    srcH = img.naturalHeight;
+    srcW = srcH * targetAspect;
+    srcX = (img.naturalWidth - srcW) / 2;
+    srcY = 0;
+  } else {
+    srcW = img.naturalWidth;
+    srcH = srcW / targetAspect;
+    srcX = 0;
+    srcY = (img.naturalHeight - srcH) / 2;
+  }
+
+  const downscale = Math.min(1, maxW / srcW, maxH / srcH);
+  const outW = Math.max(1, Math.round(srcW * downscale));
+  const outH = Math.max(1, Math.round(srcH * downscale));
+
   const canvas = document.createElement("canvas");
-  canvas.width = width;
-  canvas.height = height;
+  canvas.width = outW;
+  canvas.height = outH;
 
   const ctx = canvas.getContext("2d");
   if (!ctx) {
@@ -51,17 +84,14 @@ export async function processImageFileForPreset(
 
   ctx.imageSmoothingEnabled = true;
   ctx.imageSmoothingQuality = "high";
-
-  const scale = Math.max(width / img.naturalWidth, height / img.naturalHeight);
-  const srcW = width / scale;
-  const srcH = height / scale;
-  const srcX = (img.naturalWidth - srcW) / 2;
-  const srcY = (img.naturalHeight - srcH) / 2;
-
-  ctx.drawImage(img, srcX, srcY, srcW, srcH, 0, 0, width, height);
+  ctx.drawImage(img, srcX, srcY, srcW, srcH, 0, 0, outW, outH);
 
   const blob = await canvasToWebpBlob(canvas, quality);
   const baseName = file.name.replace(/\.[^.]+$/, "") || "imagen";
 
-  return new File([blob], `${baseName}.webp`, { type: "image/webp" });
+  return {
+    file: new File([blob], `${baseName}.webp`, { type: "image/webp" }),
+    width: outW,
+    height: outH,
+  };
 }

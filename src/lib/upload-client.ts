@@ -3,6 +3,12 @@ import type { ImagePreset } from "@/lib/image-presets";
 
 type ApiErrorBody = { error?: string };
 
+export type UploadResult = {
+  url: string;
+  width: number;
+  height: number;
+};
+
 export async function parseUploadApiResponse(
   response: Response
 ): Promise<{ url: string }> {
@@ -41,7 +47,7 @@ export const UPLOAD_MAX_MB_LABEL = "4 MB";
 export async function prepareUploadFile(
   file: File,
   preset: ImagePreset
-): Promise<File> {
+) {
   try {
     return await processImageFileForPreset(file, preset);
   } catch (error) {
@@ -57,10 +63,10 @@ export async function uploadAdminImage(
   file: File,
   folder: "artists" | "sessions" | "content",
   preset: ImagePreset
-): Promise<string> {
+): Promise<UploadResult> {
   const prepared = await prepareUploadFile(file, preset);
   const form = new FormData();
-  form.append("file", prepared);
+  form.append("file", prepared.file);
   form.append("folder", folder);
   form.append("preset", preset);
 
@@ -70,5 +76,5 @@ export async function uploadAdminImage(
   });
 
   const { url } = await parseUploadApiResponse(response);
-  return url;
+  return { url, width: prepared.width, height: prepared.height };
 }
