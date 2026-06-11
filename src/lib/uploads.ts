@@ -8,17 +8,15 @@ const MAX_BYTES = 5 * 1024 * 1024;
 
 export type UploadFolder = "artists" | "sessions" | "content";
 
+function isVercelRuntime(): boolean {
+  return process.env.VERCEL === "1";
+}
+
 function useBlobStorage(): boolean {
   return Boolean(
     process.env.BLOB_READ_WRITE_TOKEN?.trim() ||
-      process.env.BLOB_STORE_ID?.trim()
-  );
-}
-
-function assertStorageConfigured(): void {
-  if (process.env.VERCEL !== "1" || useBlobStorage()) return;
-  throw new Error(
-    "Blob Store no conectado al proyecto. En Vercel: Storage → yairinkuploads → Projects → Connect to Project → yairink."
+      process.env.BLOB_STORE_ID?.trim() ||
+      isVercelRuntime()
   );
 }
 
@@ -50,11 +48,15 @@ async function saveToVercelBlob(
   name: string
 ): Promise<string> {
   const buffer = Buffer.from(await file.arrayBuffer());
+  const token = process.env.BLOB_READ_WRITE_TOKEN?.trim();
+
   const blob = await put(`yairink/${folder}/${name}`, buffer, {
     access: "public",
     contentType: file.type,
     addRandomSuffix: false,
+    ...(token ? { token } : {}),
   });
+
   return blob.url;
 }
 
@@ -72,10 +74,16 @@ export async function saveUploadedImage(
 
   const name = buildFileName(file);
 
-  assertStorageConfigured();
-
   if (useBlobStorage()) {
-    return saveToVercelBlob(file, folder, name);
+    try {
+      return await saveToVercelBlob(file, folder, name);
+    } catch (error) {
+      const detail =
+        error instanceof Error ? error.message : "Error desconocido.";
+      throw new Error(
+        `No se pudo subir la imagen. ${detail} Verifica que yairinkuploads esté conectado a yairink y redeploy.`
+      );
+    }
   }
 
   return saveToLocalDisk(file, folder, name);
