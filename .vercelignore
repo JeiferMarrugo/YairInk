@@ -1,8 +1,8 @@
-# Reduce CLI upload size
+# Reduce CLI upload size (paths anchored to project root)
 .git
 .next
 node_modules
-services
-docker
-data
-public/uploads
+/services/
+/docker/
+/data/
+/public/uploads/
