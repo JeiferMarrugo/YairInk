@@ -67,8 +67,8 @@ console.log(`
    - O desde CLI: npm run vercel:link (primera vez) → npm run vercel:deploy
 
 6) Cron de recordatorios
-   - Ya está en vercel.json (cada 10 min)
-   - Requiere plan Pro en Vercel para frecuencia < 1/día
+   - vercel.json: 1 vez al día (9:00 AM Colombia / 14:00 UTC) — plan Hobby
+   - Para cada 10 min necesitas Vercel Pro y schedule "*/10 * * * *"
    - CRON_SECRET debe coincidir con la variable de entorno
 
 7) WhatsApp (OpenWA)
