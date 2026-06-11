@@ -16,7 +16,10 @@ function loadImage(file: File): Promise<HTMLImageElement> {
   });
 }
 
-function canvasToWebpBlob(canvas: HTMLCanvasElement): Promise<Blob> {
+function canvasToWebpBlob(
+  canvas: HTMLCanvasElement,
+  quality: number
+): Promise<Blob> {
   return new Promise((resolve, reject) => {
     canvas.toBlob(
       (blob) =>
@@ -24,7 +27,7 @@ function canvasToWebpBlob(canvas: HTMLCanvasElement): Promise<Blob> {
           ? resolve(blob)
           : reject(new Error("No se pudo exportar la imagen optimizada.")),
       "image/webp",
-      0.82
+      quality
     );
   });
 }
@@ -34,7 +37,7 @@ export async function processImageFileForPreset(
   file: File,
   preset: ImagePreset
 ): Promise<File> {
-  const { width, height } = IMAGE_PRESETS[preset];
+  const { width, height, quality } = IMAGE_PRESETS[preset];
   const img = await loadImage(file);
 
   const canvas = document.createElement("canvas");
@@ -46,6 +49,9 @@ export async function processImageFileForPreset(
     throw new Error("No se pudo procesar la imagen.");
   }
 
+  ctx.imageSmoothingEnabled = true;
+  ctx.imageSmoothingQuality = "high";
+
   const scale = Math.max(width / img.naturalWidth, height / img.naturalHeight);
   const srcW = width / scale;
   const srcH = height / scale;
@@ -54,7 +60,7 @@ export async function processImageFileForPreset(
 
   ctx.drawImage(img, srcX, srcY, srcW, srcH, 0, 0, width, height);
 
-  const blob = await canvasToWebpBlob(canvas);
+  const blob = await canvasToWebpBlob(canvas, quality);
   const baseName = file.name.replace(/\.[^.]+$/, "") || "imagen";
 
   return new File([blob], `${baseName}.webp`, { type: "image/webp" });

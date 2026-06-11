@@ -15,7 +15,8 @@ import type { ContentKey, EditableContent } from "@/types/content-admin";
 type ImageFieldDef = {
   path: string;
   label: string;
-  aspect?: "video" | "square" | "portrait" | "wide";
+  aspect?: "video" | "square" | "portrait" | "wide" | "login";
+  preset?: import("@/lib/image-presets").ImagePreset;
   hint?: string;
 };
 
@@ -27,8 +28,9 @@ const IMAGE_SECTIONS: Array<{ title: string; description?: string; fields: Image
       {
         path: "login",
         label: "Login — panel admin",
-        aspect: "portrait",
-        hint: "Se muestra en escritorio al iniciar sesión.",
+        aspect: "login",
+        preset: "login",
+        hint: "Pantalla completa lateral (escritorio). Sube en alta resolución.",
       },
     ],
   },
@@ -865,6 +867,7 @@ export default function AdminContentClient({
                         )}
                         onChange={(v) => updateImages(field.path, v)}
                         aspect={field.aspect}
+                        preset={field.preset}
                         hint={field.hint}
                       />
                     ))}

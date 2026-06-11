@@ -1,4 +1,3 @@
-import Image from "next/image";
 import LoginForm from "@/components/admin/LoginForm";
 import { getPublicContent } from "@/lib/content";
 
@@ -37,14 +36,11 @@ export default async function AdminLoginPage({ searchParams }: PageProps) {
   return (
     <div className="grid min-h-screen lg:grid-cols-2">
       <div className="relative hidden h-screen overflow-hidden bg-black lg:block">
-        <Image
-          src={loginImage}
-          alt="Estudio YAIRINK"
-          fill
-          priority
-          unoptimized={loginImage.startsWith("http")}
-          className="object-cover object-center grayscale"
-          sizes="50vw"
+        <div
+          className="absolute inset-0 scale-100 bg-cover bg-center bg-no-repeat grayscale"
+          style={{ backgroundImage: `url(${JSON.stringify(loginImage)})` }}
+          role="img"
+          aria-label="Estudio YAIRINK"
         />
         <div className="absolute inset-0 bg-black/50" />
         <div className="absolute inset-0 z-10 flex flex-col justify-end p-12">

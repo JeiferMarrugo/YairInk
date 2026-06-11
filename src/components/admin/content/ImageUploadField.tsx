@@ -4,20 +4,21 @@ import Image from "next/image";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { toast } from "sonner";
+import type { ImagePreset } from "@/lib/image-presets";
 import {
   uploadAdminImage,
   UPLOAD_MAX_BYTES,
   UPLOAD_MAX_MB_LABEL,
 } from "@/lib/upload-client";
-import type { ImagePreset } from "@/lib/image-presets";
 
-type Aspect = "video" | "square" | "portrait" | "wide";
+type Aspect = "video" | "square" | "portrait" | "wide" | "login";
 
 const aspectClass: Record<Aspect, string> = {
   video: "aspect-video",
   square: "aspect-square",
   portrait: "aspect-[3/4]",
   wide: "aspect-[21/9]",
+  login: "aspect-[8/9]",
 };
 
 type ImageUploadFieldProps = {
@@ -26,14 +27,8 @@ type ImageUploadFieldProps = {
   onChange: (value: string) => void;
   hint?: string;
   aspect?: Aspect;
+  preset?: ImagePreset;
 };
-
-async function uploadContentImage(
-  file: File,
-  preset: Aspect
-): Promise<string> {
-  return uploadAdminImage(file, "content", preset as ImagePreset);
-}
 
 export default function ImageUploadField({
   label,
@@ -41,9 +36,12 @@ export default function ImageUploadField({
   onChange,
   hint,
   aspect = "video",
+  preset,
 }: ImageUploadFieldProps) {
   const [uploading, setUploading] = useState(false);
   const [localPreview, setLocalPreview] = useState<string | null>(null);
+
+  const uploadPreset = preset ?? (aspect as ImagePreset);
 
   const previewSrc = localPreview || value;
 
@@ -66,7 +64,7 @@ export default function ImageUploadField({
 
       setUploading(true);
       try {
-        const url = await uploadContentImage(file, aspect);
+        const url = await uploadAdminImage(file, "content", uploadPreset);
         onChange(url);
         toast.success("Imagen optimizada y subida");
         setLocalPreview((prev) => {
@@ -85,7 +83,7 @@ export default function ImageUploadField({
         setUploading(false);
       }
     },
-    [onChange, aspect]
+    [onChange, uploadPreset]
   );
 
   const { getRootProps, getInputProps, isDragActive, open } = useDropzone({
@@ -127,8 +125,8 @@ export default function ImageUploadField({
             src={previewSrc}
             alt={label}
             fill
-            unoptimized={previewSrc.startsWith("blob:")}
-            className="object-cover grayscale transition duration-300 group-hover:grayscale-0"
+            unoptimized={previewSrc.startsWith("blob:") || previewSrc.startsWith("http")}
+            className="object-cover object-center grayscale transition duration-300 group-hover:grayscale-0"
             sizes="(max-width: 768px) 100vw, 400px"
           />
         ) : (
